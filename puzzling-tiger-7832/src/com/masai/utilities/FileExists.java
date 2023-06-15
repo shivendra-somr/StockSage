@@ -32,13 +32,16 @@ public class FileExists {
 				sFile = new LinkedHashMap<>();
 				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 				oos.writeObject(sFile);
+				oos.flush();
+				oos.close();
 				return sFile;
 
 			} else {
 
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 				sFile = (Map<Integer, Stock>) ois.readObject();
-
+				ois.close();
+				
 				return sFile;
 
 			}
@@ -65,13 +68,15 @@ public class FileExists {
 				bFile = new LinkedHashMap<>();
 				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 				oos.writeObject(bFile);
+				oos.flush();
+				oos.close();
 				return bFile;
 
 			} else {
 
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 				bFile = (Map<String, Broker>) ois.readObject();
-
+				ois.close();
 				return bFile;
 
 			}
@@ -104,7 +109,7 @@ public class FileExists {
 
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 				tFile = (Map<String, Trader>) ois.readObject();
-
+				ois.close();
 				return tFile;
 
 			}
@@ -131,13 +136,15 @@ public class FileExists {
 				tFile =  new ArrayList<>();
 				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 				oos.writeObject(tFile);
-
+				oos.flush();
+				oos.close();
 				return tFile;
 
 			} else {
 
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 				tFile = (List<Transaction>) ois.readObject();
+				ois.close();
 				return tFile;
 
 			}

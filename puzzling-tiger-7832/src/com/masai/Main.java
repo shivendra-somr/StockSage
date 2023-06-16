@@ -3,6 +3,7 @@ package com.masai;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import com.masai.entities.Broker;
 import com.masai.entities.Stock;
@@ -71,12 +72,12 @@ public class Main {
 	private static void approveRejectBrokerAcc(Scanner sc, stockService sService, brokerService bService,
 			traderService tradService, transService tService) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void filterTransactionHistory() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void viewTransactionHistory() {
@@ -89,7 +90,6 @@ public class Main {
 
 	}
 
-
 	public static void adminLogin(Scanner sc) throws InvalidDetailsException {
 
 		System.out.println("Enter the user name");
@@ -97,7 +97,7 @@ public class Main {
 		System.out.println("Enter the password");
 		String password = sc.next();
 		if (userName.equals(AdminCredentials.username) && password.equals(AdminCredentials.password)) {
-			System.out.println("successfully login");
+			System.out.println("Successfully login");
 		} else {
 			throw new InvalidDetailsException("Invalid Admin Credentials");
 		}
@@ -110,169 +110,195 @@ public class Main {
 		brokerService bService = new brokerServiceImpl();
 		traderService tradService = new traderServiceImpl();
 		transService tService = new transServiceImpl();
-		
+
 		brokerLogin(sc);
 		int choice = 0;
 		try {
 			do {
 				System.out.println("-------------Broker-Menu-------------");
-		        System.out.println("1 --> Add Traders");
-		        System.out.println("2 --> Manage Trader Accounts");
-		        System.out.println("3 --> Execute Trades on Behalf of Traders");
-		        System.out.println("4 --> View Transaction History for Associated Traders");
-		        System.out.println("5 --> Exit to Main Menu");
-		        System.out.print("Enter your choice: ");
+				System.out.println("1 --> Add Traders");
+				System.out.println("2 --> Manage Trader Accounts");
+				System.out.println("3 --> Execute Trades on Behalf of Traders");
+				System.out.println("4 --> View Transaction History for Associated Traders");
+				System.out.println("5 --> Exit to Main Menu");
+				System.out.print("Enter your choice: ");
 
-		        choice = sc.nextInt();
-		        switch (choice) {
-		            case 1:
-		                addTraders();
-		                break;
-		            case 2:
-		                manageTraderAccounts();
-		                break;
-		            case 3:
-		                executeTrades();
-		                break;
-		            case 4:
-		                viewTransactionHistoryForTraders();
-		                break;
-		            case 5:
-		                System.out.println("Exiting Broker Menu...");
-		                break;
-		            default:
-		                System.out.println("Invalid choice! Please try again.");
-		        }
-		        System.out.println(); 
-			} while (choice<=4);
+				choice = sc.nextInt();
+				switch (choice) {
+				case 1:
+					addTraders();
+					break;
+				case 2:
+					manageTraderAccounts();
+					break;
+				case 3:
+					executeTrades();
+					break;
+				case 4:
+					viewTransactionHistoryForTraders();
+					break;
+				case 5:
+					System.out.println("Exiting Broker Menu...");
+					break;
+				default:
+					System.out.println("Invalid choice! Please try again.");
+				}
+				System.out.println();
+			} while (choice <= 4);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println(e.getMessage());
 		}
 	}
+
 	private static void brokerLogin(Scanner sc) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	private static void applyForBrokerageAccount(Scanner sc,Map<String, Broker> broker) {
+
+	private static void applyForBrokerageAccount(Scanner sc, Map<String, Broker> broker) {
 		// TODO Auto-generated method stub
 		System.out.println("-------Apply-for-Brokerage-Account-------");
-	    System.out.print("Enter your username: ");
-	    String username = sc.next();
-	    System.out.print("Enter your password: ");
-	    String password = sc.next();
+		System.out.print("Enter your username: ");
+		String username = sc.next();
+		System.out.print("Enter your password: ");
+		String password = sc.next();
 
-	    Broker newBroker = new Broker(username, password);
+		Broker newBroker = new Broker(username, password);
 
-	    broker.put(username, newBroker);
+		broker.put(username, newBroker);
 
-	    System.out.println("Brokerage account created successfully.");
+		System.out.println("Brokerage account created successfully.");
 	}
-
 
 	private static void viewTransactionHistoryForTraders() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void executeTrades() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void manageTraderAccounts() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void addTraders() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	// Trader Side
 
 	private static void traderFunctionality(Scanner sc, Map<Integer, Stock> stocks, List<Transaction> transactions) {
 		// TODO Auto-generated method stub
-		System.out.println("-------------Trader-Menu-------------");
-        System.out.println("1 --> View Market Trends and Stock Prices");
-        System.out.println("2 --> Buy Stocks");
-        System.out.println("3 --> Sell Stocks");
-        System.out.println("4 --> View Transaction History");
-        System.out.println("5 --> View Portfolio History");
-        System.out.println("6 --> Delete Account");
-        System.out.println("7 --> Exit to Main Menu");
-        System.out.print("Enter your choice: ");
+		traderService tradService = new traderServiceImpl();
+		transService tService = new transServiceImpl();
+		
+		traderLogin(sc);
 
-        int choice = 0;
-        try {
+		System.out.println("-------------Trader-Menu-------------");
+		System.out.println("1 --> View Market Trends and Stock Prices");
+		System.out.println("2 --> Buy Stocks");
+		System.out.println("3 --> Sell Stocks");
+		System.out.println("4 --> View Transaction History");
+		System.out.println("5 --> View Portfolio History");
+		System.out.println("6 --> Delete Account");
+		System.out.println("7 --> Exit to Main Menu");
+		System.out.print("Enter your choice: ");
+
+		int choice = 0;
+		try {
 			do {
 				choice = sc.nextInt();
 				switch (choice) {
-	            case 1:
-	                viewMarketTrendsAndStockPrices();
-	                break;
-	            case 2:
-	                buyStocks();
-	                break;
-	            case 3:
-	                sellStocks();
-	                break;
-	            case 4:
-	                viewTransactionHistory();
-	                break;
-	            case 5:
-	                viewPortfolioHistory();
-	                break;
-	            case 6:
-	                deleteAccount();
-	                break;
-	            case 7:
-	                System.out.println("Exiting Trader Menu...");
-	                break;
-	            default:
-	                System.out.println("Invalid choice! Please try again.");
-	        }
-			} while (choice<=7);
+				case 1:
+					viewMarketTrendsAndStockPrices();
+					break;
+				case 2:
+					buyStocks();
+					break;
+				case 3:
+					sellStocks();
+					break;
+				case 4:
+					viewTransactionHistory();
+					break;
+				case 5:
+					viewPortfolioHistory();
+					break;
+				case 6:
+					deleteAccount();
+					break;
+				case 7:
+					System.out.println("Exiting Trader Menu...");
+					break;
+				default:
+					System.out.println("Invalid choice! Please try again.");
+				}
+			} while (choice <= 7);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println(e.getMessage());
 		}
-        System.out.println(); // Add an empty line for readability
-    }
+		System.out.println(); // Add an empty line for readability
+	}
+
+	private static void traderLogin(Scanner sc) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private static void deleteAccount() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void viewPortfolioHistory() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void sellStocks() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void buyStocks() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private static void viewMarketTrendsAndStockPrices() {
-		
+		System.out.println("----Market-Trends-and-Stock-Prices----");
+
+		Stock marketTrends = Stock.getStocks().get(1);
+		System.out.print("Market Trends: ");
+		System.out.println(marketTrends.getStockName() + "----" + "Rs. " + marketTrends.getStockPrice());
+
+		Map<Integer, Stock> stockPrices = Stock.getStocks();
+		System.out.println("Stock Prices:");
+		for (Map.Entry<Integer, Stock> me : stockPrices.entrySet()) {
+			Integer stockId = me.getKey();
+			Stock st = me.getValue();
+			System.out.println(stockId + "--|--" + st.getStockName() + "--|--" + "Rs. " + st.getStockPrice());
+		}
 	}
+
 	public static void displayMainMenu() {
-		System.out.println("Please enter you preference");
+		System.out.println("----------------------Main-Menu---------------------");
 		System.out.println("1 --> Admin Login");
 		System.out.println("2 --> Broker Login");
 		System.out.println("3 --> Apply For Brokerage Account");
 		System.out.println("4 --> Trader Login");
 		System.out.println("5 --> Trader Register");
-		System.out.println("0 --> Exit");		
+		System.out.println("0 --> Exit");
+		System.out.print("Please enter your preference: ");
 	}
+
 	public static void main(String[] args) {
 		// Welcome Message
 		{
@@ -332,34 +358,47 @@ public class Main {
 	}
 
 	private static void traderRegistration(Scanner sc, Map<String, Trader> traders) {
-		// TODO Auto-generated method stub
-		System.out.println("=== Trader Registration ===");
+		System.out.println("----------------Trader-Registration------------------");
 
-	    System.out.print("Enter name: ");
-	    String name = sc.nextLine();
-	    System.out.print("Enter address: ");
-	    String address = sc.nextLine();
-	    System.out.print("Enter contact number: ");
-	    String contactNumber = sc.nextLine();
-	    System.out.print("Enter username: ");
-	    String username = sc.nextLine();
-	    System.out.print("Enter password: ");
-	    String password = sc.nextLine();
+		System.out.println("Enter name");
+		String name = sc.next();
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid name.");
+		}
+		sc.nextLine();
+		System.out.println("Enter address: ");
+		String address = sc.next();
+		if (address.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid address.");
+		}
+		sc.nextLine();
 
-	    if (traders.containsKey(username)) {
-	        System.out.println("Username already exists. Registration failed.");
-	        return;
-	    }
+		System.out.println("Enter contact number: ");
+		String contactNumber = sc.next();
+		if (contactNumber.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid contact number.");
+		}
+		sc.nextLine();
+		System.out.println("Enter username: ");
+		String username = sc.next();
+		if (username.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid username.");
+		}
+		sc.nextLine();
+		if (traders.containsKey(username)) {
+			throw new IllegalArgumentException("Username already exists. Registration failed.");
+		}
 
-	    // Create a new trader object
-	    Trader newTrader = new Trader(name, address, contactNumber, username, password);
+		System.out.println("Enter password: ");
+		String password = sc.next();
+		if (password.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid password.");
+		}
+		sc.nextLine();
+		Trader newTrader = new Trader(name, address, contactNumber, username, password);
+		traders.put(username, newTrader);
 
-	    // Add the new trader to the traders map
-	    traders.put(username, newTrader);
-
-	    System.out.println("Trader registration successful.");
-		
+		System.out.println("Trader registration successful.");
 	}
+
 }
-
-

@@ -1,9 +1,11 @@
 package com.masai.entities;
 
 import java.io.Serializable;
-//import java.util.HashMap;
-//import java.util.Map;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+
+import com.masai.utilities.stockIdGenerator;
 
 public class Stock implements Serializable{
 	private int stockId;
@@ -45,17 +47,17 @@ public class Stock implements Serializable{
 		this.stockPrice = stockPrice;
 	}
 
-//	public static Map<Integer, Stock> getStocks() {
-//        Map<Integer, Stock> stocks = new HashMap<>();
-//        
-//        stocks.put(1, new Stock(1, "Reliance", 2520.40));
-//        stocks.put(2, new Stock(2, "TCS", 3249.95));
-//        stocks.put(3, new Stock(3, "HDFC", 1600.60));
-//        stocks.put(4, new Stock(4, "ICICI", 935.75));
-//        stocks.put(5, new Stock(5, "HUL", 2688.35));
-//
-//        return stocks;
-//    }
+	public static Map<Integer, Stock> getStocks() {
+        Map<Integer, Stock> stocks = new HashMap<>();
+        
+        stocks.put(1, new Stock(stockIdGenerator.generateId(), "Reliance", 2520.40));
+        stocks.put(2, new Stock(stockIdGenerator.generateId(), "TCS", 3249.95));
+        stocks.put(3, new Stock(stockIdGenerator.generateId(), "HDFC", 1600.60));
+        stocks.put(4, new Stock(stockIdGenerator.generateId(), "ICICI", 935.75));
+        stocks.put(5, new Stock(stockIdGenerator.generateId(), "HUL", 2688.35));
+
+        return stocks;
+    }
 	@Override
 	public String toString() {
 		return "Stock [stockId=" + stockId + ", stockName=" + stockName + ", stockPrice=" + stockPrice + "]";

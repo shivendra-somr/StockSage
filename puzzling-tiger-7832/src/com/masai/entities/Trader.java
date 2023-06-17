@@ -1,11 +1,14 @@
 package com.masai.entities;
 
-public class Trader {
+import java.io.Serializable;
+
+public class Trader implements Serializable{
 	private String name;
 	private String address;
 	private String contactNumber;
 	private String username;
 	private String password;
+	private boolean isVerified;
 
 	public Trader(String name, String address, String contactNumber, String username, String password) {
 		super();
@@ -14,6 +17,7 @@ public class Trader {
 		this.contactNumber = contactNumber;
 		this.username = username;
 		this.password = password;
+		this.isVerified = false;
 	}
 
 	public String getName() {
@@ -62,5 +66,11 @@ public class Trader {
 				+ username + ", password=" + password + "]";
 	}
 
-	
+	public boolean isVerified() {
+		return isVerified;
+	}
+
+	public void setVerified(boolean b) {
+		this.isVerified = b;
+	}
 }

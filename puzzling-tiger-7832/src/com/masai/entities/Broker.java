@@ -5,18 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Broker implements Serializable{
+//	private static final long serialVersionUID = 123456789L;
 	private String username;
     private String password;
     private boolean verified;
+    private boolean isApproved;
+    private boolean isRejected;
     private List<Transaction> transactions;
 
-    public Broker(String username, String password) {
-        this.username = username;
-        this.password = password;
-        this.verified = false;
-        this.transactions = new ArrayList();
-    }
 
+    public Broker(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.verified = false;
+		this.isApproved = false;
+		this.isRejected = false;
+		this.transactions = new ArrayList<>();
+	}
+    
 	public List<Transaction> getTransactions() {
 		return transactions;
 	}
@@ -53,5 +60,27 @@ public class Broker implements Serializable{
 	public String toString() {
 		return "Broker [username=" + username + ", password=" + password + ", verified=" + verified + "]";
 	}
+
+	public boolean isApproved() {
+		// TODO Auto-generated method stub
+		return isApproved;
+	}
+
+	public boolean isRejected() {
+		// TODO Auto-generated method stub
+		return isRejected;
+	}
+
+	public void setApproved(boolean b) {
+		// TODO Auto-generated method stub
+		this.isApproved = b;
+	}
+
+	public void setRejected(boolean b) {
+		// TODO Auto-generated method stub
+		this.isRejected = b;
+	}
+
+	
     
 }

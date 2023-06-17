@@ -1,9 +1,11 @@
 package com.masai;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 import com.masai.entities.Broker;
 import com.masai.entities.Stock;
@@ -45,13 +47,14 @@ public class Main {
 				choice = sc.nextInt();
 				switch (choice) {
 				case 1:
-					approveRejectBrokerAcc(sc, sService, bService, tradService, tService);
+					approveRejectBrokerAcc(sc, broker, bService);
 					break;
 				case 2:
-					viewActiveAccounts();
+					viewActiveAccounts(sc, sService, bService, tradService);
 					break;
 				case 3:
-					viewTransactionHistory();
+					transactions = FileExists.transactionFile();
+					viewTransactionHistory(tService, transactions);
 					break;
 				case 4:
 					filterTransactionHistory();
@@ -69,27 +72,6 @@ public class Main {
 		}
 	}
 
-	private static void approveRejectBrokerAcc(Scanner sc, stockService sService, brokerService bService,
-			traderService tradService, transService tService) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void filterTransactionHistory() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void viewTransactionHistory() {
-		// TODO Auto-generated method stub
-
-	}
-
-	private static void viewActiveAccounts() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public static void adminLogin(Scanner sc) throws InvalidDetailsException {
 
 		System.out.println("Enter the user name");
@@ -103,15 +85,123 @@ public class Main {
 		}
 	}
 
+	private static void approveRejectBrokerAcc(Scanner sc, Map<String, Broker> brokers, brokerService bService) {
+		// TODO Auto-generated method stub
+
+		try {
+			System.out.println("------Approve/Reject Broker Account------");
+
+			System.out.println("Registered Brokers:");
+			List<Broker> registeredBrokers = new ArrayList<>(brokers.values());
+			for (int i = 0; i < registeredBrokers.size(); i++) {
+				Broker broker = registeredBrokers.get(i);
+				System.out.println((i + 1) + ". Username: " + broker.getUsername());
+				System.out.println("   Approval Status: " + (broker.isApproved() ? "Approved" : "Pending"));
+				System.out.println("   Rejection Status: " + (broker.isRejected() ? "Rejected" : "Pending"));
+				System.out.println();
+			}
+
+			// Prompt user to select a broker account
+			System.out.print("Select a broker account to approve/reject: ");
+			int choice = sc.nextInt();
+			sc.nextLine();
+
+			// Validate the user's choice
+			if (choice < 1 || choice > registeredBrokers.size()) {
+				System.out.println("Invalid choice. Please try again.");
+				return;
+			}
+
+			// Retrieve the selected broker
+			Broker selectedBroker = registeredBrokers.get(choice - 1);
+
+			// Check if the broker is already approved or rejected
+			if (selectedBroker.isApproved()) {
+				System.out.println("The broker account is already approved.");
+				return;
+			} else if (selectedBroker.isRejected()) {
+				System.out.println("The broker account is already rejected.");
+				return;
+			}
+
+			// Prompt user to approve or reject the broker account
+			System.out.print("Do you want to approve or reject the broker account? (approve/reject): ");
+			String decision = sc.nextLine();
+
+			// Validate the user's decision
+			if (!decision.equalsIgnoreCase("approve") && !decision.equalsIgnoreCase("reject")) {
+				System.out.println("Invalid decision. Please enter 'approve' or 'reject'.");
+				return;
+			}
+
+			// Update the approval/rejection status of the broker
+			if (decision.equalsIgnoreCase("approve")) {
+				selectedBroker.setApproved(true);
+				selectedBroker.setRejected(false);
+				System.out.println("The broker account has been approved successfully.");
+			} else if (decision.equalsIgnoreCase("reject")) {
+				selectedBroker.setRejected(true);
+				selectedBroker.setApproved(false);
+				System.out.println("The broker account has been rejected successfully.");
+			}
+			brokers.put(selectedBroker.getUsername(), selectedBroker);
+
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+	}
+
+	private static void filterTransactionHistory() {
+		// TODO Auto-generated method stub
+
+	}
+
+	private static void viewTransactionHistory(transService tService, List<Transaction> transactions) {
+		// TODO Auto-generated method stub
+		tService.viewTransactionHistory(transactions);
+	}
+
+	private static void viewActiveAccounts(Scanner sc, stockService sService, brokerService bService,
+			traderService tradService) {
+		// TODO Auto-generated method stub
+		System.out.println("-------Active-Accounts-------");
+
+		Map<String, Broker> brokers = FileExists.brokerFile();
+		Map<String, Trader> traders = FileExists.traderFile();
+
+		List<Broker> activeBrokers = bService.getActiveBrokers(brokers);
+		System.out.println("Active Broker Accounts:");
+		for (Broker broker : activeBrokers) {
+			System.out.println("Username: " + broker.getUsername());
+			// Display other broker details as needed
+		}
+
+		List<Trader> activeTraders = tradService.getActiveTraders(traders);
+		System.out.println("Active Trader Accounts:");
+		for (Trader trader : activeTraders) {
+			System.out.println("Username: " + trader.getUsername());
+		}
+	}
+
 	// Broker Side
 	private static void brokerFunctionality(Scanner sc, Map<Integer, Stock> stocks, Map<String, Broker> broker,
-			Map<String, Trader> trader, List<Transaction> transactions) {
+			Map<String, Trader> trader, List<Transaction> transactions) throws InvalidDetailsException {
 		// TODO Auto-generated method stub
 		brokerService bService = new brokerServiceImpl();
 		traderService tradService = new traderServiceImpl();
 		transService tService = new transServiceImpl();
 
-		brokerLogin(sc);
+		broker = FileExists.brokerFile();
+
+		System.out.println("----------------Broker Login------------------");
+		System.out.println("Please enter the following details to login");
+		System.out.println("Enter username");
+		String username = sc.next();
+		System.out.println("Enter password");
+		String password = sc.next();
+
+		brokerLogin(username, password, broker, bService);
+
 		int choice = 0;
 		try {
 			do {
@@ -151,8 +241,15 @@ public class Main {
 		}
 	}
 
-	private static void brokerLogin(Scanner sc) {
+	private static void brokerLogin(String username, String password, Map<String, Broker> broker,
+			brokerService bService) throws InvalidDetailsException {
 		// TODO Auto-generated method stub
+
+		if (bService.login(username, password, broker)) {
+			return;
+		} else {
+			throw new InvalidDetailsException("Invalid details, please provide correct credentials");
+		}
 
 	}
 
@@ -164,10 +261,18 @@ public class Main {
 		System.out.print("Enter your password: ");
 		String password = sc.next();
 
+		Map<String, Broker> existingBrokers = FileExists.brokerFile();
+		if (existingBrokers != null) {
+			broker.putAll(existingBrokers);
+		}
+		System.out.println(broker);
+		if (broker.containsKey(username)) {
+			System.out.println("Username already exists. Registration failed.");
+			return;
+		}
 		Broker newBroker = new Broker(username, password);
 
 		broker.put(username, newBroker);
-
 		System.out.println("Brokerage account created successfully.");
 	}
 
@@ -193,12 +298,22 @@ public class Main {
 
 	// Trader Side
 
-	private static void traderFunctionality(Scanner sc, Map<Integer, Stock> stocks, List<Transaction> transactions) {
+	private static void traderFunctionality(Scanner sc, Map<Integer, Stock> stocks, Map<String, Trader> trader,
+			List<Transaction> transactions) throws InvalidDetailsException {
 		// TODO Auto-generated method stub
 		traderService tradService = new traderServiceImpl();
 		transService tService = new transServiceImpl();
-		
-		traderLogin(sc);
+
+		trader = FileExists.traderFile();
+
+		System.out.println("----------------Trader-Login------------------");
+		System.out.println("Please enter the following details to login");
+		System.out.println("Enter username");
+		String username = sc.next();
+		System.out.println("Enter password");
+		String password = sc.next();
+
+		traderLogin(username, password, trader, tradService);
 
 		System.out.println("-------------Trader-Menu-------------");
 		System.out.println("1 --> View Market Trends and Stock Prices");
@@ -225,7 +340,7 @@ public class Main {
 					sellStocks();
 					break;
 				case 4:
-					viewTransactionHistory();
+					viewTransactionHistoryForTraders();
 					break;
 				case 5:
 					viewPortfolioHistory();
@@ -247,9 +362,14 @@ public class Main {
 		System.out.println(); // Add an empty line for readability
 	}
 
-	private static void traderLogin(Scanner sc) {
+	private static void traderLogin(String username, String password, Map<String, Trader> trader,
+			traderService tradService) throws InvalidDetailsException {
 		// TODO Auto-generated method stub
-		
+		if (tradService.login(username, password, trader)) {
+			return;
+		} else {
+			throw new InvalidDetailsException("Invalid details, please provide correct credentials");
+		}
 	}
 
 	private static void deleteAccount() {
@@ -286,6 +406,58 @@ public class Main {
 			Stock st = me.getValue();
 			System.out.println(stockId + "--|--" + st.getStockName() + "--|--" + "Rs. " + st.getStockPrice());
 		}
+	}
+
+	private static void traderRegistration(Scanner sc, Map<String, Trader> traders) {
+		System.out.println("----------------Trader-Registration------------------");
+
+		Map<String, Trader> existingTraders = FileExists.traderFile();
+		if (existingTraders != null) {
+			traders.putAll(existingTraders);
+		}
+		System.out.println(traders);
+		System.out.println("Enter name");
+		String name = sc.next();
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid name.");
+		}
+		sc.nextLine();
+		System.out.println("Enter address: ");
+		String address = sc.next();
+		if (address.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid address.");
+		}
+		sc.nextLine();
+
+		System.out.println("Enter contact number: ");
+		String contactNumber = sc.next();
+		if (contactNumber.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid contact number.");
+		}
+		sc.nextLine();
+		System.out.println("Enter username: ");
+		String username = sc.next();
+
+		if (username.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid username.");
+		}
+		sc.nextLine();
+		if (traders.containsKey(username)) {
+			throw new IllegalArgumentException("Username already exists. Registration failed.");
+		}
+
+		System.out.println("Enter password: ");
+		String password = sc.next();
+		if (password.isEmpty()) {
+			throw new IllegalArgumentException("Please enter a valid password.");
+		}
+		sc.nextLine();
+
+		Trader newTrader = new Trader(name, address, contactNumber, username, password);
+		traders.put(username, newTrader);
+
+		System.out.println("Trader registration successful.");
+		System.out.println();
 	}
 
 	public static void displayMainMenu() {
@@ -338,7 +510,7 @@ public class Main {
 					applyForBrokerageAccount(sc, broker);
 					break;
 				case 4: // call trader functionality
-					traderFunctionality(sc, stocks, transactions);
+					traderFunctionality(sc, stocks, trader, transactions);
 					break;
 				case 5:
 					traderRegistration(sc, trader);
@@ -353,52 +525,26 @@ public class Main {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+		} finally {
+			try {
+				ObjectOutputStream poos = new ObjectOutputStream(new FileOutputStream("Stock.ser"));
+				poos.writeObject(stocks);
+				ObjectOutputStream coos = new ObjectOutputStream(new FileOutputStream("broker.ser"));
+				coos.writeObject(broker);
+				ObjectOutputStream tradoos = new ObjectOutputStream(new FileOutputStream("trader.ser"));
+				tradoos.writeObject(trader);
+				ObjectOutputStream toos = new ObjectOutputStream(new FileOutputStream("Transactions.ser"));
+				toos.writeObject(transactions);
+				poos.close();
+				coos.close();
+				tradoos.close();
+				toos.close();
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println(e.getMessage());
+			}
 		}
 
-	}
-
-	private static void traderRegistration(Scanner sc, Map<String, Trader> traders) {
-		System.out.println("----------------Trader-Registration------------------");
-
-		System.out.println("Enter name");
-		String name = sc.next();
-		if (name.isEmpty()) {
-			throw new IllegalArgumentException("Please enter a valid name.");
-		}
-		sc.nextLine();
-		System.out.println("Enter address: ");
-		String address = sc.next();
-		if (address.isEmpty()) {
-			throw new IllegalArgumentException("Please enter a valid address.");
-		}
-		sc.nextLine();
-
-		System.out.println("Enter contact number: ");
-		String contactNumber = sc.next();
-		if (contactNumber.isEmpty()) {
-			throw new IllegalArgumentException("Please enter a valid contact number.");
-		}
-		sc.nextLine();
-		System.out.println("Enter username: ");
-		String username = sc.next();
-		if (username.isEmpty()) {
-			throw new IllegalArgumentException("Please enter a valid username.");
-		}
-		sc.nextLine();
-		if (traders.containsKey(username)) {
-			throw new IllegalArgumentException("Username already exists. Registration failed.");
-		}
-
-		System.out.println("Enter password: ");
-		String password = sc.next();
-		if (password.isEmpty()) {
-			throw new IllegalArgumentException("Please enter a valid password.");
-		}
-		sc.nextLine();
-		Trader newTrader = new Trader(name, address, contactNumber, username, password);
-		traders.put(username, newTrader);
-
-		System.out.println("Trader registration successful.");
 	}
 
 }

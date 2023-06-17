@@ -103,6 +103,8 @@ public class FileExists {
 				tFile = new LinkedHashMap<>();
 				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 				oos.writeObject(tFile);
+				oos.flush();
+				oos.close();
 				return tFile;
 
 			} else {
@@ -122,7 +124,7 @@ public class FileExists {
 	}
 	public static List<Transaction> transactionFile() {
 
-		List<Transaction> tFile = new ArrayList<>();
+		List<Transaction> transFile = new ArrayList<>();
 
 		File f = new File("Transactions.ser");
 		boolean flag = false;
@@ -133,19 +135,19 @@ public class FileExists {
 			}
 
 			if (flag) {
-				tFile =  new ArrayList<>();
+				transFile =  new ArrayList<>();
 				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
-				oos.writeObject(tFile);
+				oos.writeObject(transFile);
 				oos.flush();
 				oos.close();
-				return tFile;
+				return transFile;
 
 			} else {
 
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-				tFile = (List<Transaction>) ois.readObject();
+				transFile = (List<Transaction>) ois.readObject();
 				ois.close();
-				return tFile;
+				return transFile;
 
 			}
 
@@ -154,7 +156,7 @@ public class FileExists {
 			System.out.println(e.getMessage());
 		}
 
-		return tFile;
+		return transFile;
 
 	}
 }

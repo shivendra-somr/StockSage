@@ -2,13 +2,14 @@ package com.masai.entities;
 
 import java.io.Serializable;
 
-public class Trader implements Serializable{
+public class Trader implements Serializable {
 	private String name;
 	private String address;
 	private String contactNumber;
 	private String username;
 	private String password;
 	private boolean isVerified;
+	private double funds;
 
 	public Trader(String name, String address, String contactNumber, String username, String password) {
 		super();
@@ -18,6 +19,7 @@ public class Trader implements Serializable{
 		this.username = username;
 		this.password = password;
 		this.isVerified = false;
+		this.funds = 0;
 	}
 
 	public String getName() {
@@ -72,5 +74,14 @@ public class Trader implements Serializable{
 
 	public void setVerified(boolean b) {
 		this.isVerified = b;
+	}
+
+	public double getFunds() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void setFunds(double funds) {
+		this.funds = funds;
 	}
 }

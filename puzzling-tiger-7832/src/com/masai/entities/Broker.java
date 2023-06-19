@@ -10,7 +10,6 @@ public class Broker implements Serializable{
     private String password;
     private boolean verified;
     private boolean isApproved;
-    private boolean isRejected;
     private List<Transaction> transactions;
 
 
@@ -20,7 +19,6 @@ public class Broker implements Serializable{
 		this.password = password;
 		this.verified = false;
 		this.isApproved = false;
-		this.isRejected = false;
 		this.transactions = new ArrayList<>();
 	}
     
@@ -66,21 +64,9 @@ public class Broker implements Serializable{
 		return isApproved;
 	}
 
-	public boolean isRejected() {
-		// TODO Auto-generated method stub
-		return isRejected;
-	}
-
 	public void setApproved(boolean b) {
 		// TODO Auto-generated method stub
 		this.isApproved = b;
-	}
-
-	public void setRejected(boolean b) {
-		// TODO Auto-generated method stub
-		this.isRejected = b;
-	}
-
-	
+	}	
     
 }

@@ -22,26 +22,6 @@ public class traderServiceImpl implements traderService{
 		return false;
 	}
 
-	public void deleteAccount() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void viewPortfolioHistory() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void sellStocks() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void buyStocks() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void viewMarketTrendsAndStockPrices() {
 		System.out.println("----Market-Trends-and-Stock-Prices----");
 

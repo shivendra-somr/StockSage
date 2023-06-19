@@ -3,6 +3,7 @@ package com.masai.utilities;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -159,4 +160,34 @@ public class FileExists {
 		return transFile;
 
 	}
+
+	public static void saveBrokersToFile(Map<String, Broker> brokers) {
+        try (FileOutputStream fileOut = new FileOutputStream("broker.ser");
+             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+            objectOut.writeObject(brokers);
+            System.out.println("Brokers saved to file: broker.ser");
+        } catch (IOException e) {
+            System.out.println("Error saving brokers to file: " + e.getMessage());
+        }
+    }
+	
+	public static void saveTradersToFile(Map<String, Trader> traders) {
+        try (FileOutputStream fileOut = new FileOutputStream("trader.ser");
+             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+            objectOut.writeObject(traders);
+            System.out.println("Traders saved to file: trader.ser");
+        } catch (IOException e) {
+            System.out.println("Error saving traders to file: " + e.getMessage());
+        }
+    }
+
+    public static void saveTransactionsToFile(List<Transaction> transactions) {
+        try (FileOutputStream fileOut = new FileOutputStream("Transactions.ser");
+             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+            objectOut.writeObject(transactions);
+            System.out.println("Transactions saved to file: Transactions.ser");
+        } catch (IOException e) {
+            System.out.println("Error saving transactions to file: " + e.getMessage());
+        }
+    }
 }

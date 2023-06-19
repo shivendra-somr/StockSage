@@ -25,11 +25,6 @@ public class transServiceImpl implements transService {
 		if (transactions.isEmpty()) {
             System.out.println("Transaction history is empty.");
         } else {
-    		transactions = FileExists.transactionFile();
-    		if (transactions.isEmpty()) {
-    			System.out.println("Transaction history is empty.");
-    			return;
-    		}
         	System.out.println("Transaction History:");
     		System.out.println();
     		int count=1;

@@ -3,6 +3,7 @@ package com.masai;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -144,8 +145,7 @@ public class Main {
 				brokers.put(selectedBroker.getUsername(), selectedBroker);
 				FileExists.saveBrokersToFile(brokers);
 				System.out.println("The broker account has been approved successfully.");
-			} 
-			else if (decision.equalsIgnoreCase("reject")) {
+			} else if (decision.equalsIgnoreCase("reject")) {
 				selectedBroker.setApproved(false);
 				brokers.put(selectedBroker.getUsername(), selectedBroker);
 				FileExists.saveBrokersToFile(brokers);
@@ -215,7 +215,7 @@ public class Main {
 		if (brokers == null) {
 			System.out.println("No active broker accounts found!");
 		}
-		if (traders ==  null) {
+		if (traders == null) {
 			System.out.println("No active trader accounts found!");
 			return;
 		}
@@ -274,7 +274,7 @@ public class Main {
 					executeTrades(sc, stocks, broker, trader, transactions);
 					break;
 				case 4:
-					viewTransactionHistoryForTraders();
+					viewTransactionHistoryForTraders(sc, trader);
 					break;
 				case 5:
 					System.out.println("Exiting Broker Menu...");
@@ -325,9 +325,45 @@ public class Main {
 		System.out.println("Brokerage account created successfully. Please reload the console.");
 	}
 
-	private static void viewTransactionHistoryForTraders() {
-		// TODO Auto-generated method stub
+	private static void viewTransactionHistoryForTraders(Scanner sc, Map<String, Trader> traders) {
+		System.out.println("---------View-Transaction-History-For-Traders---------");
 
+		System.out.print("Enter trader's username: ");
+		String username = sc.next();
+
+		Trader trader = traders.get(username);
+
+		if (trader == null) {
+			System.out.println("Trader not found.");
+			return;
+		}
+
+		List<Transaction> transactions = FileExists.transactionFile();
+
+		List<Transaction> filteredTransactions = new ArrayList<>();
+
+		for (Transaction transaction : transactions) {
+			if (transaction.getTraderUsername().equals(username)) {
+				filteredTransactions.add(transaction);
+			}
+		}
+		if (filteredTransactions.isEmpty()) {
+			System.out.println("No transaction history found for the trader.");
+			return;
+		}
+
+		System.out.println("Transaction History for Trader: " + username);
+		System.out.println("--------------------------------");
+
+		for (Transaction t : filteredTransactions) {
+			System.out.println("Stock: " + t.getStockSymbol());
+			System.out.println("Type: " + t.getType());
+			System.out.println("Quantity: " + t.getQuantity());
+			System.out.println("Price: " + t.getPrice());
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			System.out.println("Date: " + t.getTimestamp().format(dtf));
+			System.out.println("--------------------------------");
+		}
 	}
 
 	private static void executeTrades(Scanner sc, Map<Integer, Stock> stocks, Map<String, Broker> brokers,
@@ -350,46 +386,46 @@ public class Main {
 
 		stocks = Stock.getStocks();
 		System.out.println("Available Stocks:");
-	    for (Map.Entry<Integer, Stock> entry : stocks.entrySet()) {
-	        Integer stockId = entry.getKey();
-	        Stock stock = entry.getValue();
-	        System.out.println(stockId + ". " + stock.getStockName()+"\t\tRs." +stock.getStockPrice());
-	    }
-	    if(stocks.isEmpty()) {
-	    	System.out.println("No Stocks Available");
-	    	return;
-	    }
+		for (Map.Entry<Integer, Stock> entry : stocks.entrySet()) {
+			Integer stockId = entry.getKey();
+			Stock stock = entry.getValue();
+			System.out.println(stockId + ". " + stock.getStockName() + "\t\tRs." + stock.getStockPrice());
+		}
+		if (stocks.isEmpty()) {
+			System.out.println("No Stocks Available");
+			return;
+		}
 
-	    System.out.print("Enter the number of trades to execute: ");
-	    int numTrades = sc.nextInt();
+		System.out.print("Enter the number of trades to execute: ");
+		int numTrades = sc.nextInt();
 
-	    System.out.println("Broker " + trader.getName() + " will now select the stocks to trade.");
-	    for (int i = 0; i < numTrades; i++) {
-	        System.out.print("Enter the stock ID to trade: ");
-	        int stockId = sc.nextInt();
+		System.out.println("Broker " + trader.getName() + " will now select the stocks to trade.");
+		for (int i = 0; i < numTrades; i++) {
+			System.out.print("Enter the stock ID to trade: ");
+			int stockId = sc.nextInt();
 
-	        if (!stocks.containsKey(stockId)) {
-	            System.out.println("Invalid stock ID. Please try again.");
-	            return;
-	        }
+			if (!stocks.containsKey(stockId)) {
+				System.out.println("Invalid stock ID. Please try again.");
+				return;
+			}
 
-	        Stock stock = stocks.get(stockId);
+			Stock stock = stocks.get(stockId);
 
-	        System.out.print("Enter the quantity of stocks to trade: ");
-	        int quantity = sc.nextInt();
+			System.out.print("Enter the quantity of stocks to trade: ");
+			int quantity = sc.nextInt();
 
-	        double price = stock.getStockPrice();
+			double price = stock.getStockPrice();
 
-	        LocalDateTime timestamp = LocalDateTime.now();
-	        TransactionType type = TransactionType.SELL; // Assuming the broker is selling the stocks
-	        Transaction transaction = new Transaction(timestamp, trader.getUsername(), stock.getStockSymbol(), type,
-	                quantity, price);
+			LocalDateTime timestamp = LocalDateTime.now();
+			TransactionType type = TransactionType.SELL; // Assuming the broker is selling the stocks
+			Transaction transaction = new Transaction(timestamp, trader.getUsername(), stock.getStockSymbol(), type,
+					quantity, price);
 
-	        transactions.add(transaction);
-	        FileExists.saveTransactionsToFile(transactions);
-	        System.out.println("Trade executed successfully: " + quantity + " stocks of " + stock.getStockName() +
-	                " traded at a price of Rs." + price);
-	    }
+			transactions.add(transaction);
+			FileExists.saveTransactionsToFile(transactions);
+			System.out.println("Trade executed successfully: " + quantity + " stocks of " + stock.getStockName()
+					+ " traded at a price of Rs." + price);
+		}
 	}
 
 	private static void manageTraderAccounts(Scanner sc, Map<String, Broker> brokers, Map<String, Trader> traders) {
@@ -408,7 +444,48 @@ public class Main {
 			return;
 		}
 
-		System.out.println("Trader account managed successfully.");
+		Trader trader = traders.get(selectedTrader);
+
+		System.out.println("Selected trader: " + trader.getUsername());
+		System.out.println("1 -->  View Account Details");
+		System.out.println("2 --> Update Account Details");
+		System.out.println("3 --> Delete Account");
+		System.out.print("Enter your choice: ");
+		int choice = sc.nextInt();
+		sc.nextLine();
+
+		switch (choice) {
+		case 1:
+			System.out.println("\tAccount Details:");
+			System.out.println("\tName: " + trader.getName());
+			System.out.println("\tAddress: " + trader.getAddress());
+			System.out.println("\tContact Number: " + trader.getContactNumber());
+			System.out.println("\tUsername: " + trader.getUsername());
+			System.out.println("\tPassword: " + trader.getPassword());
+			break;
+		case 2:
+			System.out.println("\tUpdate Account Details");
+			System.out.print("Enter new name: ");
+			String newName = sc.nextLine();
+			System.out.print("Enter new address: ");
+			String newAddress = sc.nextLine();
+			System.out.print("Enter new contact number: ");
+			String newContactNumber = sc.nextLine();
+
+			trader.setName(newName);
+			trader.setAddress(newAddress);
+			trader.setContactNumber(newContactNumber);
+
+			System.out.println("Account details updated successfully.");
+			break;
+		case 3:
+			traders.remove(trader.getUsername());
+			System.out.println("Trader account deleted successfully.");
+			break;
+		default:
+			System.out.println("Invalid choice. Please try again.");
+			break;
+		}
 	}
 
 	private static void addTraders(Scanner sc, Map<String, Broker> brokers, Map<String, Trader> traders) {
@@ -432,26 +509,24 @@ public class Main {
 		Trader newTrader = new Trader(name, address, contactNumber, username, password);
 
 		traders.put(username, newTrader);
-
+		FileExists.saveTradersToFile(traders);
 		System.out.println("Trader added successfully.");
 	}
 
 	// Trader Side
-
 	private static void traderFunctionality(Scanner sc, Map<Integer, Stock> stocks, Map<String, Trader> trader,
 			List<Transaction> transactions) throws InvalidDetailsException {
 		// TODO Auto-generated method stub
 		traderService tradService = new traderServiceImpl();
-		transService tService = new transServiceImpl();
 
 		trader = FileExists.traderFile();
 
 		System.out.println("------------------Trader-Login------------------");
 		System.out.println("Please enter the following details to login");
 		System.out.print("Enter username: ");
-		String username = sc.nextLine();
+		String username = sc.next();
 		System.out.print("Enter password: ");
-		String password = sc.nextLine();
+		String password = sc.next();
 
 		traderLogin(username, password, trader, tradService);
 
@@ -484,7 +559,7 @@ public class Main {
 					viewTransactionHistory(username, transactions, trader);
 					break;
 				case 5:
-					viewPortfolioHistory(trader);
+					viewPortfolioHistory(username, trader);
 					break;
 				case 6:
 					deleteAccount(sc, trader, transactions);
@@ -531,9 +606,10 @@ public class Main {
 	private static void viewTransactionHistory(String username, List<Transaction> transactions,
 			Map<String, Trader> traders) {
 
-		// Retrieve the trader from the traders map
 		Trader trader = traders.get(username);
+
 		transactions = FileExists.transactionFile();
+
 		List<Transaction> traderTransactions = transactions.stream()
 				.filter(t -> t.getTraderUsername().equals(trader.getUsername())).collect(Collectors.toList());
 		if (traderTransactions.isEmpty()) {
@@ -545,11 +621,11 @@ public class Main {
 		System.out.println("TraderName\tStockSymbol\tQuantity\tPrice\tTotalPrice");
 		for (Transaction t : traderTransactions) {
 //			System.out.println(t);
-			System.out.print(t.getTraderUsername() + "\t");
-			System.out.print(t.getStockSymbol() + "\t");
-			System.out.print(t.getQuantity() + "\t");
-			System.out.print(t.getPrice() + "\t");
-			System.out.print(t.getQuantity() * t.getPrice());
+			System.out.print("\t" + t.getTraderUsername());
+			System.out.print("\t" + t.getStockSymbol());
+			System.out.print("\t" + t.getQuantity());
+			System.out.print("\t" + t.getPrice());
+			System.out.print("\t" + t.getQuantity() * t.getPrice());
 		}
 	}
 
@@ -570,7 +646,6 @@ public class Main {
 		System.out.print("Enter your username: ");
 		String username = sc.next();
 
-		// Check if the trader exists or not
 		if (!traders.containsKey(username)) {
 			System.out.println("Invalid username. Please try again.");
 			return;
@@ -578,48 +653,50 @@ public class Main {
 
 		Trader trader = traders.get(username);
 
-		// Remove the trader from the traders map
 		traders.remove(username);
 
-		// Remove the trader's transactions from the transactions list
 		transactions.removeIf(t -> t.getTraderUsername().equals(trader.getUsername()));
 
-		// Save the updated traders and transactions to the respective files
 		FileExists.saveTradersToFile(traders);
 		FileExists.saveTransactionsToFile(transactions);
 
 		System.out.println("Account deleted successfully.");
 	}
 
-	private static void viewPortfolioHistory(Map<String, Trader> traders) {
-		// ...
-		Scanner sc = new Scanner(System.in);
-		// Prompt the trader to enter their username
-		System.out.print("Enter your username: ");
-		String username = sc.next();
+	private static void viewPortfolioHistory(String username, Map<String, Trader> traders) {
 
-		// Check if the trader exists in the traders map
 		if (!traders.containsKey(username)) {
 			System.out.println("Invalid username. Please try again.");
 			return;
 		}
 
-		// Retrieve the trader from the traders map
 		Trader trader = traders.get(username);
 
-		// Display the portfolio history for the trader
-		System.out.println("Portfolio History:");
+		System.out.println("Portfolio History for Trader: " + trader.getUsername());
+		List<Transaction> transactions = FileExists.transactionFile();
 
-		List<Stock> portfolio = new ArrayList<>();
+		List<Transaction> traderTransactions = transactions.stream()
+				.filter(t -> t.getTraderUsername().equals(trader.getUsername())).collect(Collectors.toList());
+		if (traderTransactions.isEmpty()) {
+			System.out.println("Transaction history is empty.");
+			return;
+		}
 
-		Map<Integer, Stock> stocks = Stock.getStocks();
-		for (Stock stock : stocks.values()) {
-			portfolio.add(stock);
+		if (traderTransactions.isEmpty()) {
+			System.out.println("No portfolio history found for the trader.");
+		} else {
+			System.out.println();
+			System.out.println("\t\t\t\tPortfolio-History");
+			System.out.println("Stock Symbol\tType\tQuantity\tPrice\t\tTimestamp");
+
+			for (Transaction transaction : traderTransactions) {
+				System.out.printf("%-12s\t%-4s\t%-8d\t%.2f\t\t%s\n", transaction.getStockSymbol(),
+						transaction.getType(), transaction.getQuantity(), transaction.getPrice(),
+						transaction.getTimestamp());
+			}
+			System.out.println();
 		}
-		for (Stock stock : portfolio) {
-			System.out.println(stock.getStockName() + " - Symbol: " + stock.getStockSymbol() + " - Average Price: "
-					+ stock.getStockPrice());
-		}
+
 	}
 
 	private static void sellStocks(Scanner sc, Map<Integer, Stock> stocks, Map<String, Trader> traders,
@@ -745,41 +822,25 @@ public class Main {
 			return;
 		}
 
-		// Create a new transaction for buying stocks
 		LocalDateTime timestamp = LocalDateTime.now();
 		TransactionType type = TransactionType.BUY;
 		Transaction transaction = new Transaction(timestamp, trader.getUsername(), stock.getStockSymbol(), type,
 				quantity, price);
 
-		// Update the trader's funds
 		trader.setFunds(trader.getFunds() - totalCost);
 
-		// Add the transaction to the list of transactions
 		transactions = FileExists.transactionFile();
 		transactions.add(transaction);
 		FileExists.saveTransactionsToFile(transactions);
 
-		// Save the updated trader information to the file
 		traders.put(username, trader);
 		FileExists.saveTradersToFile(traders);
 
 		System.out.println("Stocks bought successfully.");
 	}
 
-	private static List<Transaction> filterTransactionsByUsername(List<Transaction> transactions, String username) {
-		List<Transaction> filteredTransactions = new ArrayList<>();
-		for (Transaction transaction : transactions) {
-			if (transaction.getTraderUsername().equals(username)) {
-				filteredTransactions.add(transaction);
-			}
-		}
-		return filteredTransactions;
-	}
-
 	private static void viewMarketTrendsAndStockPrices() throws ClassNotFoundException {
 		System.out.println("----Market-Trends-and-Stock-Prices----");
-
-//		stocks = FileExists.stockFile();
 
 		try {
 
@@ -828,8 +889,8 @@ public class Main {
 
 		System.out.println("Enter contact number: ");
 		String contactNumber = sc.next();
-		if (contactNumber.isEmpty()) {
-			throw new IllegalArgumentException("Please enter a valid contact number.");
+		if (contactNumber.isEmpty() || !isValidContactNumber(contactNumber)) {
+			throw new IllegalArgumentException("Please enter a valid 10-digit contact number.");
 		}
 		sc.nextLine();
 		System.out.println("Enter username: ");
@@ -855,6 +916,10 @@ public class Main {
 
 		System.out.println("Trader registration successful. Please reload the console.");
 		System.out.println();
+	}
+
+	private static boolean isValidContactNumber(String contactNumber) {
+		return contactNumber.matches("\\d{10}");
 	}
 
 	public static void displayMainMenu() {
